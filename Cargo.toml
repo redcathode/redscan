@@ -1,0 +1,11 @@
+[package]
+name = "redscan"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+craftping = { version = "0.5.0", features = ["sync", "async-tokio"] }
+tokio = { version = "1.37.0", features = [ "full" ] }
+tokio-task-pool = "0.1.5"
