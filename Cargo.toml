@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 craftping = { version = "0.5.0", features = ["sync", "async-tokio"] }
+indicatif = "0.17.8"
 tokio = { version = "1.37.0", features = [ "full" ] }
 tokio-utils = "0.1.2"

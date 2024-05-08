@@ -2,6 +2,7 @@ use std::{env, fs, time::Duration};
 use craftping::{Response, tokio::ping};
 use tokio::net::TcpStream;
 use tokio_utils::RateLimiter;
+use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
 
 async fn attempt_server_ping(hostname: &str, port: u16) -> Result<Response, &str> {
     match TcpStream::connect((hostname, port)).await {
@@ -28,7 +29,11 @@ async fn main() {
         .map(String::from)
         .collect();
 
+    let num_hosts = lines.len();
+    let mut host_num: usize = 0;
+
     for line in lines {
+        host_num += 1;
         rate_limiter.throttle(|| tokio::spawn(async move {
             let response = match tokio::time::timeout(
                 Duration::from_millis(250),
@@ -36,7 +41,7 @@ async fn main() {
             ).await {
                 Ok(ok) => {
                     if let Ok(pong) = ok {
-                        Ok(pong.description)
+                        Ok(format!("desc: {:?}, secure_chat: {:?}, online: {}, max: {}, version: {}, protocol: {}", pong.description, pong.enforces_secure_chat, pong.online_players, pong.max_players, pong.version, pong.protocol))
                     } else {
                         Err("conn")
                     }
@@ -46,7 +51,9 @@ async fn main() {
                 }
             };
             if let Ok(server) = response {
-                println!("{}: {:?}", line, server);
+                let tbp = format!("{}: {}", line, server);
+                println!("{}", tbp);
+                eprintln!("\r{}% - {}", (host_num as f32 / num_hosts as f32) * 100.0, tbp);
             }
             
         })).await.expect("some kind of rate limiting error?");
