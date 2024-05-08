@@ -45,7 +45,7 @@ async fn main() {
         host_num += 1;
         pool.spawn(async move {
             let response = match attempt_server_ping(&line, 25565).await {
-                Ok(pong) => Ok(format!("desc: {:?}, secure_chat: {:?}, online: {}, max: {}, version: {}, protocol: {}", pong.description, pong.enforces_secure_chat, pong.online_players, pong.max_players, pong.version, pong.protocol)),
+                Ok(pong) => Ok(format!("desc: {:?}, secure_chat: {:?}, online: {}, max: {}, version: {}, protocol: {}", pong.description.text, pong.enforces_secure_chat, pong.online_players, pong.max_players, pong.version, pong.protocol)),
                 Err(_) => Err("pong")
             };
             if let Ok(server) = response {
