@@ -35,7 +35,7 @@ async fn main() {
     let mut host_num: usize = 0;
 
     let pb: ProgressBar = ProgressBar::new(num_hosts as u64);
-    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {human_pos}/{human_len} hosts ({percent_precise}% - eta {eta})")
         .unwrap()
         .with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
         .progress_chars("#>-"));
@@ -51,7 +51,7 @@ async fn main() {
             if let Ok(server) = response {
                 let tbp = format!("{}: {}", line, server);
                 println!("{}", tbp);
-                // eprintln!("\r{:.3}% ({}/{} hosts) - {}", (host_num as f32 / num_hosts as f32) * 100.0, host_num, num_hosts, tbp);
+                eprintln!("\r{:.3}% ({}/{} hosts) - {}", (host_num as f32 / num_hosts as f32) * 100.0, host_num, num_hosts, tbp);
             }
             
         }).await.unwrap();
