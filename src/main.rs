@@ -55,5 +55,6 @@ async fn main() {
             }
             
         }).await.unwrap();
+        pb.set_position(host_num as u64);
     }
 }
