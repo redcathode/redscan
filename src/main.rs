@@ -22,7 +22,7 @@ async fn main() {
     let file_path = dbg!(args.get(1).expect("pass text file of IPs as first argument"));
     let max_concurrent_hosts: usize = dbg!(args.get(2).unwrap_or(&"200".to_string()).parse().unwrap());
     let pool = Pool::bounded(max_concurrent_hosts)
-        .with_spawn_timeout(Duration::from_millis(50))
+        .with_spawn_timeout(Duration::from_millis(100))
         .with_run_timeout(Duration::from_millis(250));
     
     let lines: Vec<String> = fs::read_to_string(file_path)
