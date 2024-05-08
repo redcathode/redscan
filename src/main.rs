@@ -39,10 +39,11 @@ async fn main() {
         .with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
         .progress_chars("#>-"));
 
+    let mut handles = vec![];
 
     for line in lines {
         host_num += 1;
-        pool.spawn(async move {
+        handles.push(pool.spawn(async move {
             let response = match attempt_server_ping(&line, 25565).await {
                 Ok(pong) => Ok(format!("desc: {:?}, secure_chat: {:?}, online: {}, max: {}, version: {}, protocol: {}", pong.description.text, pong.enforces_secure_chat, pong.online_players, pong.max_players, pong.version, pong.protocol)),
                 Err(_) => Err("pong")
@@ -53,7 +54,8 @@ async fn main() {
                 eprintln!("\r{:.3}% ({}/{} hosts) - {}", (host_num as f32 / num_hosts as f32) * 100.0, host_num, num_hosts, tbp);
             }
             
-        }).await.unwrap();
+        }).await.unwrap());
         pb.set_position(host_num as u64);
     }
+    futures::future::join_all(handles).await;
 }
