@@ -33,16 +33,19 @@ async fn main() {
             ).await {
                 Ok(ok) => {
                     if let Ok(pong) = ok {
-                        format!("{:#?}", pong.description.text)
+                        Ok(pong.description)
                     } else {
-                        "err connecting".to_string()
+                        Err("conn")
                     }
                 },
                 Err(_) => {
-                    "timer elapsed".to_string()
+                    Err("timer")
                 }
             };
-            println!("{}: {}", line, response);
+            if let Ok(server) = response {
+                println!("{}: {:?}", line, server);
+            }
+            
         });
     }
 }
