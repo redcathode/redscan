@@ -1,8 +1,8 @@
-use std::{env, fs, time::Duration};
+use std::{env, fs, time::Duration, fmt::Write};
 use craftping::{Response, tokio::ping};
 use tokio::net::TcpStream;
-use tokio_utils::RateLimiter;
 use tokio_task_pool::Pool;
+use indicatif::{ProgressBar, ProgressState, ProgressStyle};
 
 async fn attempt_server_ping(hostname: &str, port: u16) -> Result<Response, &str> {
     match TcpStream::connect((hostname, port)).await {
@@ -33,6 +33,13 @@ async fn main() {
 
     let num_hosts = lines.len();
     let mut host_num: usize = 0;
+
+    let pb: ProgressBar = ProgressBar::new(num_hosts as u64);
+    pb.set_style(ProgressStyle::with_template("{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({eta})")
+        .unwrap()
+        .with_key("eta", |state: &ProgressState, w: &mut dyn Write| write!(w, "{:.1}s", state.eta().as_secs_f64()).unwrap())
+        .progress_chars("#>-"));
+
 
     for line in lines {
         host_num += 1;
