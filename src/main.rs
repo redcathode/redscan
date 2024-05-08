@@ -34,7 +34,7 @@ async fn main() {
 
     for line in lines {
         host_num += 1;
-        rate_limiter.throttle(|| tokio::spawn(async move {
+        tokio::spawn(async move {
             let response = match tokio::time::timeout(
                 Duration::from_millis(250),
                 attempt_server_ping(&line, 25565)
@@ -56,6 +56,6 @@ async fn main() {
                 eprintln!("\r{:.3}% - {}", (host_num as f32 / num_hosts as f32) * 100.0, tbp);
             }
             
-        })).await.expect("some kind of rate limiting error?");
+        });
     }
 }
