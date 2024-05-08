@@ -53,7 +53,7 @@ async fn main() {
             if let Ok(server) = response {
                 let tbp = format!("{}: {}", line, server);
                 println!("{}", tbp);
-                eprintln!("\r{:.3}% - {}", (host_num as f32 / num_hosts as f32) * 100.0, tbp);
+                eprintln!("\r{:.3}% ({}/{} hosts) - {}", (host_num as f32 / num_hosts as f32) * 100.0, host_num, num_hosts, tbp);
             }
             
         });
