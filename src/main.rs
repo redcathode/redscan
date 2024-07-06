@@ -77,7 +77,7 @@ async fn main() {
                 Err(e) => eprintln!("Failed to insert server details: {}", e),
             }
         }
-    }));
+    }).await.unwrap());
     pb.set_position(host_num as u64);
 }
 futures::future::join_all(handles).await; // Ensure to handle errors appropriately in your actual code.
