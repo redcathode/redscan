@@ -46,7 +46,7 @@ async fn main() {
     for line in lines {
     host_num += 1;
     let sqlitepool_clone = sqlitepool.clone(); // Clone the pool for use in the async block.
-    handles.push(tokio::spawn(async move { // Use tokio::spawn for asynchronous execution.
+    handles.push(pool.spawn(async move { // Use tokio::spawn for asynchronous execution.
         let response = match attempt_server_ping(&line, 25565).await {
             Ok(pong) => Ok((
                 line, // IP address or server identifier
