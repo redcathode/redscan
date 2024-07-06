@@ -46,15 +46,15 @@ async fn process_lines(lines: Vec<String>, sqlitepool: SqlitePool, pool: Pool, p
                     Err(e) => eprintln!("Failed to insert server details: {}", e),
                 }
             }
-        }));
-
+        }).await.unwrap());
+        pb.set_position(host_num as u64);
         batch_counter += 1;
         if batch_counter == 5000 {
             join_all(handles).await;
             handles = Vec::new(); // Clear the vector for the next batch
             batch_counter = 0; // Reset the counter for the next batch
         }
-        pb.set_position(host_num as u64);
+        
     }
 
     // After the loop, check if there's a final batch to process
