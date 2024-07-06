@@ -50,6 +50,7 @@ async fn main() {
         let response = match attempt_server_ping(&line, 25565).await {
             Ok(pong) => Ok((
                 line, // IP address or server identifier
+                25565 as i32,
                 pong.description.text, // Description
                 pong.enforces_secure_chat, // Secure chat
                 pong.online_players, // Online players
@@ -60,18 +61,19 @@ async fn main() {
             Err(_) => Err("Failed to ping server")
         };
 
-        if let Ok((ip_address, description, secure_chat, online_players, max_players, version, protocol)) = response {
-            let insert_query = sqlx::query("INSERT INTO servers (ip_address, description, secure_chat, online_players, max_players, version, protocol) VALUES (?, ?, ?, ?, ?, ?, ?)")
-                .bind(ip_address)
+        if let Ok((ip_address, port, description, secure_chat, online_players, max_players, version, protocol)) = response {
+            let insert_query = sqlx::query("INSERT INTO servers (ip_address, port, description, secure_chat, online_players, max_players, version, protocol) VALUES (?, ?, ?, ?, ?, ?, ?)")
+                .bind(&ip_address)
+                .bind(port)
                 .bind(description)
                 .bind(secure_chat)
                 .bind(online_players as i32)
                 .bind(max_players as i32)
                 .bind(version)
                 .bind(protocol);
-
+            println!("{}:{}: {} players online", ip_address, port, online_players);
             match insert_query.execute(&sqlitepool_clone).await {
-                Ok(_) => println!("Server details inserted successfully."),
+                Ok(_) => (),
                 Err(e) => eprintln!("Failed to insert server details: {}", e),
             }
         }
