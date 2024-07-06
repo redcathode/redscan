@@ -62,7 +62,7 @@ async fn main() {
         };
 
         if let Ok((ip_address, port, description, secure_chat, online_players, max_players, version, protocol)) = response {
-            let insert_query = sqlx::query("INSERT INTO servers (ip_address, port, description, secure_chat, online_players, max_players, version, protocol) VALUES (?, ?, ?, ?, ?, ?, ?)")
+            let insert_query = sqlx::query("INSERT INTO servers (ip_address, port, description, secure_chat, online_players, max_players, version, protocol) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
                 .bind(&ip_address)
                 .bind(port)
                 .bind(description)
