@@ -1,4 +1,4 @@
-use std::{env, fmt::Write, fs, time::Duration, vec::Vec};
+use std::{env, fmt::Write, fs, os::unix::process, time::Duration, vec::Vec};
 use craftping::{Response, tokio::ping};
 use tokio::net::TcpStream;
 use tokio_task_pool::Pool;
@@ -9,9 +9,11 @@ use futures::future::join_all;
 
 async fn process_lines(lines: Vec<String>, sqlitepool: SqlitePool, pool: Pool, pb: ProgressBar) {
     let mut handles = Vec::new();
+    let mut host_num = 0;
     let mut batch_counter = 0;
 
     for line in lines {
+        host_num += 1;
         let sqlitepool_clone = sqlitepool.clone();
         handles.push(pool.spawn(async move {
             let response = match attempt_server_ping(&line, 25565).await {
@@ -52,7 +54,7 @@ async fn process_lines(lines: Vec<String>, sqlitepool: SqlitePool, pool: Pool, p
             handles = Vec::new(); // Clear the vector for the next batch
             batch_counter = 0; // Reset the counter for the next batch
         }
-        pb.inc(1);
+        pb.set_position(host_num as u64);
     }
 
     // After the loop, check if there's a final batch to process
