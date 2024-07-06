@@ -45,18 +45,18 @@ async fn main() {
 
     for line in lines {
     host_num += 1;
-    let sqlitepool_clone = sqlitepool.clone(); // Clone the pool for use in the async block.
-    handles.push(pool.spawn(async move { // Use tokio::spawn for asynchronous execution.
+    let sqlitepool_clone = sqlitepool.clone(); 
+    handles.push(pool.spawn(async move { 
         let response = match attempt_server_ping(&line, 25565).await {
             Ok(pong) => Ok((
-                line, // IP address or server identifier
+                line, // server ip
                 25565 as i32,
-                pong.description.text, // Description
-                pong.enforces_secure_chat, // Secure chat
-                pong.online_players, // Online players
-                pong.max_players, // Max players
-                pong.version, // Version
-                pong.protocol // Protocol
+                pong.description.text, 
+                pong.enforces_secure_chat, 
+                pong.online_players, 
+                pong.max_players, 
+                pong.version, 
+                pong.protocol 
             )),
             Err(_) => Err("Failed to ping server")
         };
@@ -80,5 +80,5 @@ async fn main() {
     }).await.unwrap());
     pb.set_position(host_num as u64);
 }
-futures::future::join_all(handles).await; // Ensure to handle errors appropriately in your actual code.
+futures::future::join_all(handles).await; 
 }
